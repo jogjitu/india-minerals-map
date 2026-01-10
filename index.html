@@ -1,0 +1,1987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Minerals Map - NCERT Class 10 Board Exam Prep</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background: #0f0f1a;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 340px;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #e94560;
+            border-radius: 3px;
+        }
+
+        .header {
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e94560;
+        }
+
+        .header h1 {
+            font-size: 1.3em;
+            background: linear-gradient(90deg, #e94560, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .subtitle {
+            font-size: 0.75em;
+            color: #aaa;
+            margin-top: 2px;
+        }
+
+        /* Score Panel */
+        .score-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .score-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .score-value {
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .score-label {
+            font-size: 0.7em;
+            opacity: 0.9;
+        }
+
+        .streak-fire {
+            animation: pulse 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        /* Mode Buttons */
+        .mode-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .mode-btn {
+            padding: 12px 8px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mode-btn .icon {
+            font-size: 1.5em;
+        }
+
+        .quiz-btn {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            color: white;
+        }
+
+        .quiz-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+        }
+
+        .quiz-btn.active {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+
+        .flashcard-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .flashcard-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .mcq-btn {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+        }
+
+        .mcq-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(155, 89, 182, 0.4);
+        }
+
+        .explore-btn {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+
+        .explore-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(243, 156, 18, 0.4);
+        }
+
+        /* Section Styles */
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .section h2 {
+            font-size: 0.9em;
+            color: #e94560;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Filter Section */
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.8em;
+        }
+
+        .filter-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.02);
+        }
+
+        .filter-item input {
+            cursor: pointer;
+            accent-color: #e94560;
+        }
+
+        .mineral-icon {
+            font-size: 1.2em;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75em;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Belt Buttons */
+        .belt-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .belt-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 2px solid;
+            background: transparent;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-family: inherit;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .belt-btn .belt-icon {
+            font-size: 1.4em;
+        }
+
+        .belt-btn .belt-info {
+            flex: 1;
+        }
+
+        .belt-btn .belt-name {
+            font-weight: 600;
+        }
+
+        .belt-btn .belt-states {
+            font-size: 0.75em;
+            opacity: 0.7;
+        }
+
+        .belt-btn.ne-belt { border-color: #3498db; }
+        .belt-btn.sw-belt { border-color: #27ae60; }
+        .belt-btn.nw-belt { border-color: #f39c12; }
+
+        .belt-btn:hover, .belt-btn.active {
+            color: #1a1a2e;
+        }
+
+        .belt-btn.ne-belt:hover, .belt-btn.ne-belt.active { background: #3498db; }
+        .belt-btn.sw-belt:hover, .belt-btn.sw-belt.active { background: #27ae60; }
+        .belt-btn.nw-belt:hover, .belt-btn.nw-belt.active { background: #f39c12; }
+
+        /* Info Panel */
+        .info-panel {
+            min-height: 100px;
+        }
+
+        .info-content {
+            display: none;
+        }
+
+        .info-content.active {
+            display: block;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .info-icon {
+            font-size: 2em;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .info-title {
+            flex: 1;
+        }
+
+        .info-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .info-state {
+            font-size: 0.8em;
+            color: #aaa;
+        }
+
+        .info-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75em;
+            color: white;
+            margin: 8px 0;
+        }
+
+        .info-facts {
+            font-size: 0.85em;
+            line-height: 1.6;
+            color: #ccc;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border-left: 3px solid #e94560;
+        }
+
+        .info-belt {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            font-size: 0.8em;
+        }
+
+        .info-placeholder {
+            color: #666;
+            text-align: center;
+            padding: 30px 10px;
+            font-size: 0.9em;
+        }
+
+        .info-placeholder .hint-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        /* Mnemonics */
+        .mnemonic-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mnemonic-item {
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border-left: 3px solid #f39c12;
+        }
+
+        .mnemonic-key {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #f39c12;
+            letter-spacing: 3px;
+            font-family: monospace;
+        }
+
+        .mnemonic-expand {
+            font-size: 0.8em;
+            color: #ccc;
+            margin-top: 4px;
+        }
+
+        .mnemonic-mineral {
+            font-size: 0.7em;
+            color: #888;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Map Container */
+        .map-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            background: #1a1a2e;
+        }
+
+        /* Custom Markers */
+        .custom-marker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+            font-size: 16px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .custom-marker:hover {
+            transform: scale(1.2);
+            z-index: 1000 !important;
+        }
+
+        .custom-marker.discovered {
+            animation: discovered 0.5s ease-out;
+        }
+
+        @keyframes discovered {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+
+        /* Legend */
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(26, 26, 46, 0.95);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            color: white;
+            font-size: 0.8em;
+            backdrop-filter: blur(10px);
+        }
+
+        .legend h4 {
+            margin-bottom: 10px;
+            color: #e94560;
+            font-size: 0.9em;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .legend-icon {
+            font-size: 1.2em;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Flashcard Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .flashcard {
+            width: 400px;
+            height: 300px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flashcard-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .flashcard-front {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .flashcard-front .card-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .flashcard-front .card-question {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .flashcard-front .card-hint {
+            font-size: 0.85em;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+        .flashcard-back {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-back .answer-mineral {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .flashcard-back .answer-details {
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .flashcard-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .flashcard-controls button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-next {
+            background: #e94560;
+            color: white;
+        }
+
+        .btn-close {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        /* MCQ Modal */
+        .mcq-container {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            color: white;
+        }
+
+        .mcq-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .mcq-progress {
+            font-size: 0.85em;
+            color: #aaa;
+        }
+
+        .mcq-question {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .mcq-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mcq-option {
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            font-size: 1em;
+            color: white;
+            text-align: left;
+        }
+
+        .mcq-option:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: #e94560;
+        }
+
+        .mcq-option.correct {
+            background: rgba(39, 174, 96, 0.3);
+            border-color: #27ae60;
+        }
+
+        .mcq-option.wrong {
+            background: rgba(231, 76, 60, 0.3);
+            border-color: #e74c3c;
+        }
+
+        .mcq-option.disabled {
+            pointer-events: none;
+        }
+
+        .mcq-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .mcq-feedback.show {
+            display: block;
+        }
+
+        .mcq-feedback.correct {
+            background: rgba(39, 174, 96, 0.2);
+            border-left: 4px solid #27ae60;
+        }
+
+        .mcq-feedback.wrong {
+            background: rgba(231, 76, 60, 0.2);
+            border-left: 4px solid #e74c3c;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            z-index: 3000;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Tooltip */
+        .leaflet-tooltip {
+            background: rgba(26, 26, 46, 0.95);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            padding: 8px 12px;
+            font-size: 0.85em;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .leaflet-tooltip::before {
+            border-top-color: rgba(26, 26, 46, 0.95);
+        }
+
+        /* Popup */
+        .leaflet-popup-content-wrapper {
+            background: rgba(26, 26, 46, 0.98);
+            color: white;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .leaflet-popup-tip {
+            background: rgba(26, 26, 46, 0.98);
+        }
+
+        .popup-content {
+            padding: 5px;
+        }
+
+        .popup-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .popup-icon {
+            font-size: 1.8em;
+        }
+
+        .popup-title {
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        .popup-subtitle {
+            font-size: 0.8em;
+            color: #aaa;
+        }
+
+        .popup-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            margin: 5px 0;
+        }
+
+        .popup-facts {
+            font-size: 0.85em;
+            color: #ccc;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Mnemonic Styles */
+        .mnemonic-item {
+            padding: 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            border-left: 4px solid #f39c12;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mnemonic-item:hover {
+            background: rgba(243, 156, 18, 0.2);
+            transform: translateX(5px);
+        }
+
+        .mnemonic-sentence {
+            font-size: 1em;
+            font-weight: 600;
+            color: #f39c12;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .mnemonic-sentence .highlight {
+            color: #fff;
+            background: linear-gradient(90deg, #e94560, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.1em;
+        }
+
+        .mnemonic-decode {
+            font-size: 0.75em;
+            color: #aaa;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .mnemonic-decode span {
+            background: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .mnemonic-mineral-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7em;
+            color: #888;
+            margin-top: 6px;
+            padding: 3px 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+        }
+
+        /* Mnemonic Game Modal */
+        .mnemonic-game-container {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 25px;
+            border-radius: 20px;
+            max-width: 550px;
+            width: 95%;
+            color: white;
+        }
+
+        .mnemonic-game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .mnemonic-game-header h3 {
+            font-size: 1.3em;
+        }
+
+        .mnemonic-story {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .story-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .story-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .story-text .word-highlight {
+            font-weight: 700;
+            color: #f39c12;
+            font-size: 1.2em;
+        }
+
+        .mnemonic-challenge {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .challenge-question {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #e94560;
+        }
+
+        .challenge-hint {
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 15px;
+        }
+
+        .challenge-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1.1em;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+        }
+
+        .challenge-input:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+
+        .challenge-input.correct {
+            border-color: #27ae60;
+            background: rgba(39, 174, 96, 0.2);
+        }
+
+        .challenge-input.wrong {
+            border-color: #e74c3c;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .challenge-feedback {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .challenge-feedback.show {
+            display: block;
+        }
+
+        .challenge-feedback.correct {
+            background: rgba(39, 174, 96, 0.2);
+            color: #2ecc71;
+        }
+
+        .challenge-feedback.wrong {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .mnemonic-locations {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .location-chip {
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .location-chip:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .location-chip.revealed {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+        }
+
+        .mnemonic-game-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: 45vh;
+                padding: 10px;
+            }
+            .map-container {
+                height: 55vh;
+            }
+            .flashcard {
+                width: 90%;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="header">
+            <h1>India Minerals Explorer</h1>
+            <div class="subtitle">NCERT Class 10 Geography - Chapter 5</div>
+        </div>
+
+        <div class="score-panel">
+            <div class="score-item">
+                <span class="score-value" id="scoreValue">0</span>
+                <span class="score-label">Score</span>
+            </div>
+            <div class="score-item">
+                <span class="score-value streak-fire" id="streakValue">0</span>
+                <span class="score-label">Streak</span>
+            </div>
+            <div class="score-item">
+                <span class="score-value" id="discoveredValue">0/34</span>
+                <span class="score-label">Discovered</span>
+            </div>
+        </div>
+
+        <div class="mode-buttons">
+            <button class="mode-btn quiz-btn" onclick="toggleQuizMode()">
+                <span class="icon">🎯</span>
+                <span>Quiz Mode</span>
+            </button>
+            <button class="mode-btn flashcard-btn" onclick="openFlashcards()">
+                <span class="icon">🃏</span>
+                <span>Flashcards</span>
+            </button>
+            <button class="mode-btn mcq-btn" onclick="openMCQ()">
+                <span class="icon">📝</span>
+                <span>Practice MCQ</span>
+            </button>
+            <button class="mode-btn explore-btn" onclick="resetExplore()">
+                <span class="icon">🗺️</span>
+                <span>Explore</span>
+            </button>
+        </div>
+
+        <div class="section">
+            <h2>🔍 Filter Minerals</h2>
+            <div class="filter-grid">
+                <label class="filter-item">
+                    <input type="checkbox" checked onchange="toggleMineral('iron')">
+                    <span class="mineral-icon">⛏️</span>
+                    Iron Ore
+                </label>
+                <label class="filter-item">
+                    <input type="checkbox" checked onchange="toggleMineral('coal')">
+                    <span class="mineral-icon">�ite</span>
+                    Coal
+                </label>
+                <label class="filter-item">
+                    <input type="checkbox" checked onchange="toggleMineral('manganese')">
+                    <span class="mineral-icon">🔮</span>
+                    Manganese
+                </label>
+                <label class="filter-item">
+                    <input type="checkbox" checked onchange="toggleMineral('bauxite')">
+                    <span class="mineral-icon">🧱</span>
+                    Bauxite
+                </label>
+                <label class="filter-item">
+                    <input type="checkbox" checked onchange="toggleMineral('mica')">
+                    <span class="mineral-icon">✨</span>
+                    Mica
+                </label>
+                <label class="filter-item">
+                    <input type="checkbox" checked onchange="toggleMineral('copper')">
+                    <span class="mineral-icon">🥉</span>
+                    Copper
+                </label>
+                <label class="filter-item">
+                    <input type="checkbox" checked onchange="toggleMineral('limestone')">
+                    <span class="mineral-icon">🪨</span>
+                    Limestone
+                </label>
+                <label class="filter-item">
+                    <input type="checkbox" checked onchange="toggleMineral('lignite')">
+                    <span class="mineral-icon">�ite</span>
+                    Lignite
+                </label>
+            </div>
+            <div class="btn-row">
+                <button class="btn-small" onclick="showAllMinerals()">Show All</button>
+                <button class="btn-small" onclick="hideAllMinerals()">Hide All</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🗻 Iron Ore Belts (NCERT)</h2>
+            <div class="belt-list">
+                <button class="belt-btn ne-belt" onclick="showIronBelt('odisha-jharkhand')">
+                    <span class="belt-icon">🏔️</span>
+                    <div class="belt-info">
+                        <div class="belt-name">Odisha-Jharkhand Belt</div>
+                        <div class="belt-states">Badampahar, Mayurbhanj, Kendujhar</div>
+                    </div>
+                </button>
+                <button class="belt-btn sw-belt" onclick="showIronBelt('durg-bastar')">
+                    <span class="belt-icon">⛰️</span>
+                    <div class="belt-info">
+                        <div class="belt-name">Durg-Bastar-Chandrapur</div>
+                        <div class="belt-states">Bailadila (Super high-grade)</div>
+                    </div>
+                </button>
+                <button class="belt-btn nw-belt" onclick="showIronBelt('bellary')">
+                    <span class="belt-icon">🌄</span>
+                    <div class="belt-info">
+                        <div class="belt-name">Ballari-Chitradurga-Tumakuru</div>
+                        <div class="belt-states">Karnataka (Kudremukh)</div>
+                    </div>
+                </button>
+                <button class="belt-btn" style="border-color: #e74c3c;" onclick="showIronBelt('maharashtra-goa')">
+                    <span class="belt-icon">🚢</span>
+                    <div class="belt-info">
+                        <div class="belt-name">Maharashtra-Goa Belt</div>
+                        <div class="belt-states">Export via Marmagao port</div>
+                    </div>
+                </button>
+            </div>
+            <button class="btn-small" style="margin-top: 8px; width: 100%;" onclick="clearBelts()">Clear Highlights</button>
+        </div>
+
+        <div class="section info-panel" id="infoPanel">
+            <h2>📍 Location Details</h2>
+            <div class="info-placeholder" id="infoPlaceholder">
+                <div class="hint-icon">👆</div>
+                <div>Click on any mineral pin to see details</div>
+                <div style="font-size: 0.8em; color: #555; margin-top: 5px;">In Quiz Mode, test your memory!</div>
+            </div>
+            <div class="info-content" id="infoContent"></div>
+        </div>
+
+        <div class="section">
+            <h2>🧠 Memory Tricks (Mnemonics)</h2>
+            <div class="mnemonic-list" id="mnemonicList">
+                <!-- Mnemonics will be populated by JS -->
+            </div>
+            <button class="btn-small" style="margin-top: 10px; width: 100%;" onclick="openMnemonicGame()">🎮 Practice Mnemonics</button>
+        </div>
+    </div>
+
+    <div class="map-container">
+        <div id="map"></div>
+        <div class="legend">
+            <h4>🗺️ Mineral Legend</h4>
+            <div class="legend-item"><span class="legend-icon">⛏️</span> Iron Ore (Hematite/Magnetite)</div>
+            <div class="legend-item"><span class="legend-icon">🪨</span> Coal (Gondwana/Tertiary)</div>
+            <div class="legend-item"><span class="legend-icon">🔮</span> Manganese</div>
+            <div class="legend-item"><span class="legend-icon">🧱</span> Bauxite (Aluminium ore)</div>
+            <div class="legend-item"><span class="legend-icon">✨</span> Mica</div>
+            <div class="legend-item"><span class="legend-icon">🥉</span> Copper</div>
+            <div class="legend-item"><span class="legend-icon">🏛️</span> Limestone</div>
+            <div class="legend-item"><span class="legend-icon">🔥</span> Lignite</div>
+        </div>
+    </div>
+
+    <!-- Flashcard Modal -->
+    <div class="modal-overlay" id="flashcardModal">
+        <div>
+            <div class="flashcard" id="flashcard" onclick="flipCard()">
+                <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                        <div class="card-icon" id="cardIcon">⛏️</div>
+                        <div class="card-question" id="cardQuestion">Where is Jharia located?</div>
+                        <div class="card-hint" id="cardHint">Click to reveal answer</div>
+                    </div>
+                    <div class="flashcard-back">
+                        <div class="answer-mineral" id="answerMineral">Jharia, Jharkhand</div>
+                        <div class="answer-details" id="answerDetails">
+                            Largest coal reserves in India (19.4 billion tonnes).
+                            Best quality coking coal. Part of Damodar Valley.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard-controls">
+                <button class="btn-close" onclick="closeFlashcards()">Close</button>
+                <button class="btn-next" onclick="nextCard()">Next Card →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mnemonic Game Modal -->
+    <div class="modal-overlay" id="mnemonicModal">
+        <div class="mnemonic-game-container">
+            <div class="mnemonic-game-header">
+                <h3>🧠 Mnemonic Challenge</h3>
+                <button onclick="closeMnemonicGame()" style="background: none; border: none; color: white; font-size: 1.5em; cursor: pointer;">×</button>
+            </div>
+            <div class="mnemonic-game-content">
+                <div class="mnemonic-story" id="mnemonicStory">
+                    <div class="story-icon" id="storyIcon">🚂</div>
+                    <div class="story-text" id="storyText">Loading...</div>
+                </div>
+                <div class="mnemonic-challenge">
+                    <div class="challenge-question" id="challengeQuestion">What does JRBK stand for?</div>
+                    <div class="challenge-hint" id="challengeHint">Think of the story above!</div>
+                    <input type="text" class="challenge-input" id="challengeInput" placeholder="Type first letters..." autocomplete="off">
+                    <div class="challenge-feedback" id="challengeFeedback"></div>
+                </div>
+                <div class="mnemonic-locations" id="mnemonicLocations">
+                    <!-- Location buttons -->
+                </div>
+            </div>
+            <div class="mnemonic-game-footer">
+                <button class="btn-close" onclick="closeMnemonicGame()">Close</button>
+                <button class="btn-next" onclick="nextMnemonic()">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MCQ Modal -->
+    <div class="modal-overlay" id="mcqModal">
+        <div class="mcq-container">
+            <div class="mcq-header">
+                <h3>📝 Practice MCQ</h3>
+                <span class="mcq-progress" id="mcqProgress">Question 1/10</span>
+                <button onclick="closeMCQ()" style="background: none; border: none; color: white; font-size: 1.5em; cursor: pointer;">×</button>
+            </div>
+            <div class="mcq-question" id="mcqQuestion">
+                Which mineral is formed by decomposition of rocks, leaving a residual mass of weathered material?
+            </div>
+            <div class="mcq-options" id="mcqOptions">
+                <button class="mcq-option" onclick="selectOption(this, 0)">(a) Coal</button>
+                <button class="mcq-option" onclick="selectOption(this, 1)">(b) Bauxite</button>
+                <button class="mcq-option" onclick="selectOption(this, 2)">(c) Gold</button>
+                <button class="mcq-option" onclick="selectOption(this, 3)">(d) Zinc</button>
+            </div>
+            <div class="mcq-feedback" id="mcqFeedback">
+                <strong>Correct!</strong> Bauxite is formed by decomposition of surface rocks.
+            </div>
+            <div style="margin-top: 15px; text-align: right;">
+                <button class="btn-next" id="mcqNextBtn" onclick="nextMCQ()" style="display: none;">Next Question →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mineral Icons and Colors
+        const mineralConfig = {
+            iron: { icon: '⛏️', color: '#e74c3c', name: 'Iron Ore' },
+            coal: { icon: '🪨', color: '#2c3e50', name: 'Coal' },
+            manganese: { icon: '🔮', color: '#9b59b6', name: 'Manganese' },
+            bauxite: { icon: '🧱', color: '#e67e22', name: 'Bauxite' },
+            mica: { icon: '✨', color: '#f1c40f', name: 'Mica' },
+            copper: { icon: '🥉', color: '#d35400', name: 'Copper' },
+            limestone: { icon: '🏛️', color: '#bdc3c7', name: 'Limestone' },
+            lignite: { icon: '🔥', color: '#7f8c8d', name: 'Lignite' }
+        };
+
+        // Complete mineral data from NCERT
+        const minerals = {
+            iron: [
+                { name: 'Badampahar', state: 'Odisha', lat: 21.92, lng: 86.42, facts: 'High grade hematite ore in Mayurbhanj district. Part of Odisha-Jharkhand belt.', belt: 'Odisha-Jharkhand', oreType: 'Hematite' },
+                { name: 'Kendujhar', state: 'Odisha', lat: 21.63, lng: 85.58, facts: 'Major iron ore producing district in Odisha. High grade hematite deposits.', belt: 'Odisha-Jharkhand', oreType: 'Hematite' },
+                { name: 'Gua', state: 'Jharkhand', lat: 22.21, lng: 85.38, facts: 'Located in Singhbhum district. Hematite iron ore mining region.', belt: 'Odisha-Jharkhand', oreType: 'Hematite' },
+                { name: 'Noamundi', state: 'Jharkhand', lat: 22.09, lng: 85.50, facts: 'Part of Singhbhum iron ore belt. High-grade hematite deposits.', belt: 'Odisha-Jharkhand', oreType: 'Hematite' },
+                { name: 'Bailadila', state: 'Chhattisgarh', lat: 18.69, lng: 81.22, facts: 'Bailadila hills look like the hump of an ox. 14 deposits of SUPER HIGH GRADE hematite. Best physical properties for steel making. Exported to Japan & South Korea via Visakhapatnam.', belt: 'Durg-Bastar-Chandrapur', oreType: 'Hematite', important: true },
+                { name: 'Durg', state: 'Chhattisgarh', lat: 21.19, lng: 81.28, facts: 'Part of Durg-Bastar-Chandrapur belt. Supplies to Bhilai Steel Plant.', belt: 'Durg-Bastar-Chandrapur', oreType: 'Hematite' },
+                { name: 'Chandrapur', state: 'Maharashtra', lat: 19.97, lng: 79.30, facts: 'Part of Durg-Bastar-Chandrapur belt extending into Maharashtra.', belt: 'Durg-Bastar-Chandrapur', oreType: 'Hematite' },
+                { name: 'Ballari', state: 'Karnataka', lat: 15.14, lng: 76.92, facts: 'Large reserves of iron ore in Karnataka. Part of Ballari-Chitradurga-Tumakuru belt.', belt: 'Ballari-Chitradurga', oreType: 'Hematite' },
+                { name: 'Chitradurga', state: 'Karnataka', lat: 14.23, lng: 76.40, facts: 'Part of Karnataka iron ore belt with significant reserves.', belt: 'Ballari-Chitradurga', oreType: 'Hematite' },
+                { name: 'Kudremukh', state: 'Karnataka', lat: 13.18, lng: 75.25, facts: 'Kudre means "horse" in Kannada (peak resembles horse face). One of LARGEST deposits in the world. 100% export unit. Ore transported as SLURRY through pipeline to Mangaluru port.', belt: 'Ballari-Chitradurga', oreType: 'Magnetite', important: true },
+                { name: 'Tumakuru', state: 'Karnataka', lat: 13.34, lng: 77.10, facts: 'Part of Ballari-Chitradurga-Tumakuru belt in Karnataka.', belt: 'Ballari-Chitradurga', oreType: 'Hematite' },
+                { name: 'Goa', state: 'Goa', lat: 15.30, lng: 74.08, facts: 'Ores not very high quality but efficiently exploited. Exported via Marmagao port.', belt: 'Maharashtra-Goa', oreType: 'Hematite' },
+                { name: 'Ratnagiri', state: 'Maharashtra', lat: 16.99, lng: 73.31, facts: 'Part of Maharashtra-Goa belt. Iron ore deposits along the coast.', belt: 'Maharashtra-Goa', oreType: 'Hematite' }
+            ],
+            coal: [
+                { name: 'Jharia', state: 'Jharkhand', lat: 23.75, lng: 86.42, facts: 'LARGEST coal reserves in India. Best quality COKING coal. Part of Damodar Valley. Main coal producing areas: Bihar, Jharkhand, Chhattisgarh, Odisha, West Bengal.', belt: 'Damodar Valley', coalType: 'Bituminous', important: true },
+                { name: 'Raniganj', state: 'West Bengal', lat: 23.62, lng: 87.13, facts: 'OLDEST coal mining region in India. Part of Damodar Valley coalfield. Gondwana coal (200+ million years old).', belt: 'Damodar Valley', coalType: 'Bituminous', important: true },
+                { name: 'Bokaro', state: 'Jharkhand', lat: 23.67, lng: 86.15, facts: 'Important coalfield in Damodar Valley. Supplies to steel plants.', belt: 'Damodar Valley', coalType: 'Bituminous' },
+                { name: 'Karanpura', state: 'Jharkhand', lat: 23.68, lng: 85.32, facts: 'Part of Damodar Valley coalfield system.', belt: 'Damodar Valley', coalType: 'Bituminous' },
+                { name: 'Singrauli', state: 'MP/UP', lat: 24.20, lng: 82.68, facts: 'Spread over 2,200 sq km. One of the largest coalfields.', belt: 'Son Valley', coalType: 'Bituminous' },
+                { name: 'Korba', state: 'Chhattisgarh', lat: 22.35, lng: 82.68, facts: 'Major coalfield. Important for thermal power generation.', belt: 'Mahanadi Valley', coalType: 'Bituminous' },
+                { name: 'Talcher', state: 'Odisha', lat: 20.95, lng: 85.23, facts: 'Part of Mahanadi coalfield in Odisha.', belt: 'Mahanadi Valley', coalType: 'Bituminous' },
+                { name: 'Godavari Valley', state: 'Telangana', lat: 18.67, lng: 80.10, facts: 'Singareni coalfield. Godavari valley coal deposits.', belt: 'Godavari Valley', coalType: 'Bituminous' }
+            ],
+            manganese: [
+                { name: 'Balaghat', state: 'Madhya Pradesh', lat: 21.80, lng: 80.18, facts: 'MP produces 33% of India\'s manganese. Used in steel manufacturing. 10 kg manganese needed for 1 tonne of steel.', belt: 'Central India' },
+                { name: 'Nagpur', state: 'Maharashtra', lat: 21.15, lng: 79.09, facts: 'Maharashtra produces 27% of manganese. Also used in bleaching powder, insecticides, paints.', belt: 'Central India' },
+                { name: 'Sundergarh', state: 'Odisha', lat: 22.12, lng: 84.03, facts: 'Odisha produces 16% of India\'s manganese. Bonai-Keonjhar belt.', belt: 'North-Eastern' },
+                { name: 'Dharwar', state: 'Karnataka', lat: 15.45, lng: 75.80, facts: 'Karnataka produces 12% of manganese. Dharwar-Bellary region.', belt: 'South-Western' }
+            ],
+            bauxite: [
+                { name: 'Panchpatmali', state: 'Odisha', lat: 18.70, lng: 82.90, facts: 'MOST IMPORTANT bauxite deposits. Odisha produces 65% of India\'s bauxite. NALCO operations. Located in Koraput district.', belt: 'Eastern Ghats', important: true },
+                { name: 'Amarkantak', state: 'MP/Chhattisgarh', lat: 22.67, lng: 81.75, facts: 'Located on Amarkantak Plateau. Bauxite formed by decomposition of rocks rich in aluminium silicates.', belt: 'Central Plateau' },
+                { name: 'Maikal Hills', state: 'Chhattisgarh', lat: 22.50, lng: 81.50, facts: 'Part of Maikal Range. Bauxite deposits found on plateau regions.', belt: 'Central Plateau' },
+                { name: 'Bilaspur-Katni', state: 'MP/Chhattisgarh', lat: 23.33, lng: 82.14, facts: 'Plateau region with bauxite deposits.', belt: 'Central Plateau' }
+            ],
+            mica: [
+                { name: 'Koderma', state: 'Jharkhand', lat: 24.47, lng: 85.59, facts: 'LEADING producer of mica. Koderma-Gaya-Hazaribagh belt. Northern edge of Chota Nagpur plateau. Mica has excellent di-electric strength.', belt: 'Chota Nagpur', important: true },
+                { name: 'Hazaribagh', state: 'Jharkhand', lat: 23.99, lng: 85.36, facts: 'Part of Koderma-Gaya-Hazaribagh mica belt. Used in electric and electronic industries.', belt: 'Chota Nagpur' },
+                { name: 'Gaya', state: 'Bihar', lat: 24.75, lng: 85.01, facts: 'Part of Bihar-Jharkhand mica belt. Mica splits into thin sheets.', belt: 'Chota Nagpur' },
+                { name: 'Ajmer', state: 'Rajasthan', lat: 26.45, lng: 74.64, facts: 'Major mica producing area in Rajasthan. Aravalli region.', belt: 'Aravalli' },
+                { name: 'Nellore', state: 'Andhra Pradesh', lat: 14.44, lng: 79.99, facts: 'Important mica belt in South India. Quality mica deposits.', belt: 'South-Eastern' }
+            ],
+            copper: [
+                { name: 'Balaghat', state: 'Madhya Pradesh', lat: 22.00, lng: 80.71, facts: 'Malanjkhand mines. India is CRITICALLY DEFICIENT in copper. Copper is malleable, ductile, good conductor. Used in electrical cables, electronics, chemicals.', belt: 'Central India', important: true },
+                { name: 'Khetri', state: 'Rajasthan', lat: 28.02, lng: 75.80, facts: 'Located in Jhunjhunu district. 80 km long copper belt in Aravalli foothills.', belt: 'Aravalli' },
+                { name: 'Singhbhum', state: 'Jharkhand', lat: 22.50, lng: 86.00, facts: 'Historic copper mining region in Chota Nagpur plateau.', belt: 'Chota Nagpur' }
+            ],
+            limestone: [
+                { name: 'Katni', state: 'Madhya Pradesh', lat: 23.83, lng: 80.40, facts: 'Limestone - basic raw material for CEMENT industry. Essential for smelting iron ore in blast furnace.', belt: 'Central India' },
+                { name: 'Bilaspur', state: 'Chhattisgarh', lat: 22.09, lng: 82.15, facts: 'Chhattisgarh produces 11% of limestone. Found in sedimentary rocks.', belt: 'Central India' },
+                { name: 'Cuddapah', state: 'Andhra Pradesh', lat: 14.47, lng: 78.82, facts: 'Andhra Pradesh produces 13% of limestone. Composed of calcium carbonates.', belt: 'South India' }
+            ],
+            lignite: [
+                { name: 'Neyveli', state: 'Tamil Nadu', lat: 11.53, lng: 79.48, facts: 'PRINCIPAL lignite reserves in India. Lignite is low grade BROWN coal with high moisture. Tertiary coal (55 million years old). NLC operations. Used for electricity generation.', belt: 'South India', important: true }
+            ]
+        };
+
+        // MCQ Questions from NCERT
+        const mcqQuestions = [
+            {
+                question: "Which mineral is formed by decomposition of rocks, leaving a residual mass of weathered material?",
+                options: ["Coal", "Bauxite", "Gold", "Zinc"],
+                correct: 1,
+                explanation: "Bauxite is formed by the decomposition of surface rocks, and the removal of soluble constituents, leaving a residual mass of weathered material containing ores."
+            },
+            {
+                question: "Koderma in Jharkhand is the leading producer of which mineral?",
+                options: ["Bauxite", "Mica", "Iron ore", "Copper"],
+                correct: 1,
+                explanation: "Koderma-Gaya-Hazaribagh belt of Jharkhand is the leading producer of mica in India."
+            },
+            {
+                question: "Minerals are deposited and accumulated in the strata of which type of rocks?",
+                options: ["Sedimentary rocks", "Metamorphic rocks", "Igneous rocks", "None of the above"],
+                correct: 0,
+                explanation: "In sedimentary rocks, minerals occur in beds or layers, formed as a result of deposition, accumulation and concentration in horizontal strata."
+            },
+            {
+                question: "Which mineral is contained in the Monazite sand?",
+                options: ["Oil", "Uranium", "Thorium", "Coal"],
+                correct: 2,
+                explanation: "The Monazite sands of Kerala are rich in Thorium, used for generating atomic or nuclear power."
+            },
+            {
+                question: "The largest coal reserves in India are found at:",
+                options: ["Raniganj", "Jharia", "Bokaro", "Neyveli"],
+                correct: 1,
+                explanation: "Jharia coalfield in Jharkhand has the largest coal reserves in India with best quality coking coal."
+            },
+            {
+                question: "Kudremukh iron ore is transported to port as:",
+                options: ["By trucks", "By railway", "As slurry through pipeline", "By ship"],
+                correct: 2,
+                explanation: "The ore from Kudremukh is transported as slurry through a pipeline to a port near Mangaluru."
+            },
+            {
+                question: "Which state is the largest producer of bauxite in India?",
+                options: ["Gujarat", "Jharkhand", "Odisha", "Maharashtra"],
+                correct: 2,
+                explanation: "Odisha was the largest bauxite producing state in India in 2018-19, with Panchpatmali deposits being the most important."
+            },
+            {
+                question: "Bailadila hills are famous for:",
+                options: ["Coal deposits", "Super high-grade hematite", "Copper mines", "Mica deposits"],
+                correct: 1,
+                explanation: "Bailadila range of hills in Bastar district has 14 deposits of super high-grade hematite iron ore with best physical properties for steel making."
+            },
+            {
+                question: "Rat-hole mining is associated with:",
+                options: ["Iron ore in Karnataka", "Coal in Meghalaya", "Copper in Rajasthan", "Bauxite in Odisha"],
+                correct: 1,
+                explanation: "Coal mining in Jowai and Cherapunjee in Meghalaya is done by family members in the form of long narrow tunnels known as 'Rat hole' mining."
+            },
+            {
+                question: "The oldest coal mining region in India is:",
+                options: ["Jharia", "Raniganj", "Bokaro", "Singrauli"],
+                correct: 1,
+                explanation: "Raniganj in West Bengal is the oldest coal mining region in India, part of the Damodar Valley coalfield."
+            }
+        ];
+
+        // Game State
+        let score = 0;
+        let streak = 0;
+        let discovered = new Set();
+        let quizMode = false;
+        let currentFlashcard = 0;
+        let currentMCQ = 0;
+        let allLocations = [];
+
+        // Initialize map
+        const map = L.map('map', {
+            zoomControl: true,
+            scrollWheelZoom: true
+        }).setView([22.5, 82], 5);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '©OpenStreetMap, ©CartoDB',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Layer groups
+        const mineralLayers = {};
+        const beltPolygons = {};
+
+        // Create markers with custom icons
+        function createMarker(lat, lng, mineral, data) {
+            const config = mineralConfig[mineral];
+            const size = data.important ? 40 : 32;
+
+            const icon = L.divIcon({
+                className: 'custom-marker-wrapper',
+                html: `<div class="custom-marker" style="width: ${size}px; height: ${size}px; background: ${config.color}; font-size: ${size * 0.5}px;">${config.icon}</div>`,
+                iconSize: [size, size],
+                iconAnchor: [size/2, size/2]
+            });
+
+            const marker = L.marker([lat, lng], { icon: icon });
+
+            // Popup content
+            const popupContent = `
+                <div class="popup-content">
+                    <div class="popup-header">
+                        <span class="popup-icon">${config.icon}</span>
+                        <div>
+                            <div class="popup-title">${data.name}</div>
+                            <div class="popup-subtitle">${data.state}</div>
+                        </div>
+                    </div>
+                    <div class="popup-badge" style="background: ${config.color}">${config.name}${data.oreType ? ' - ' + data.oreType : ''}</div>
+                    <div class="popup-facts">${data.facts}</div>
+                </div>
+            `;
+
+            marker.bindPopup(popupContent, { maxWidth: 300 });
+
+            marker.on('click', function() {
+                updateInfoPanel(data, mineral);
+                discoverLocation(data.name);
+
+                if (quizMode) {
+                    addScore(10);
+                    incrementStreak();
+                    createConfetti();
+                }
+            });
+
+            if (!quizMode) {
+                marker.bindTooltip(data.name, {
+                    permanent: false,
+                    direction: 'top',
+                    offset: [0, -size/2]
+                });
+            }
+
+            return marker;
+        }
+
+        // Initialize minerals
+        function initializeMinerals() {
+            allLocations = [];
+
+            for (const [mineral, locations] of Object.entries(minerals)) {
+                mineralLayers[mineral] = L.layerGroup();
+
+                locations.forEach(loc => {
+                    const marker = createMarker(loc.lat, loc.lng, mineral, loc);
+                    marker.addTo(mineralLayers[mineral]);
+                    allLocations.push({ ...loc, mineral });
+                });
+
+                mineralLayers[mineral].addTo(map);
+            }
+        }
+
+        // Toggle mineral visibility
+        function toggleMineral(mineral) {
+            const checkbox = document.querySelector(`input[onchange="toggleMineral('${mineral}')"]`);
+            if (checkbox && checkbox.checked) {
+                mineralLayers[mineral].addTo(map);
+            } else {
+                map.removeLayer(mineralLayers[mineral]);
+            }
+        }
+
+        function showAllMinerals() {
+            document.querySelectorAll('.filter-grid input').forEach(cb => {
+                cb.checked = true;
+            });
+            for (const layer of Object.values(mineralLayers)) {
+                layer.addTo(map);
+            }
+        }
+
+        function hideAllMinerals() {
+            document.querySelectorAll('.filter-grid input').forEach(cb => {
+                cb.checked = false;
+            });
+            for (const layer of Object.values(mineralLayers)) {
+                map.removeLayer(layer);
+            }
+        }
+
+        // Iron ore belt highlighting
+        function showIronBelt(belt) {
+            clearBelts();
+
+            const beltLocations = {
+                'odisha-jharkhand': ['Badampahar', 'Kendujhar', 'Gua', 'Noamundi'],
+                'durg-bastar': ['Bailadila', 'Durg', 'Chandrapur'],
+                'bellary': ['Ballari', 'Chitradurga', 'Kudremukh', 'Tumakuru'],
+                'maharashtra-goa': ['Goa', 'Ratnagiri']
+            };
+
+            const locations = minerals.iron.filter(loc => beltLocations[belt].includes(loc.name));
+
+            if (locations.length > 0) {
+                const bounds = L.latLngBounds(locations.map(loc => [loc.lat, loc.lng]));
+                map.fitBounds(bounds.pad(0.3));
+
+                // Highlight these markers
+                locations.forEach(loc => {
+                    L.circle([loc.lat, loc.lng], {
+                        radius: 50000,
+                        color: '#e94560',
+                        fillColor: '#e94560',
+                        fillOpacity: 0.2
+                    }).addTo(map);
+                });
+            }
+        }
+
+        function clearBelts() {
+            map.eachLayer(layer => {
+                if (layer instanceof L.Circle) {
+                    map.removeLayer(layer);
+                }
+            });
+            map.setView([22.5, 82], 5);
+        }
+
+        // Update info panel
+        function updateInfoPanel(data, mineral) {
+            const config = mineralConfig[mineral];
+            document.getElementById('infoPlaceholder').style.display = 'none';
+
+            const content = document.getElementById('infoContent');
+            content.classList.add('active');
+
+            content.innerHTML = `
+                <div class="info-header">
+                    <div class="info-icon" style="background: ${config.color}">${config.icon}</div>
+                    <div class="info-title">
+                        <div class="info-name">${data.name}</div>
+                        <div class="info-state">${data.state}</div>
+                    </div>
+                </div>
+                <div class="info-badge" style="background: ${config.color}">${config.name}${data.oreType ? ' - ' + data.oreType : ''}${data.coalType ? ' (' + data.coalType + ')' : ''}</div>
+                <div class="info-facts">${data.facts}</div>
+                <div class="info-belt">
+                    <strong>Belt:</strong> ${data.belt || 'N/A'}
+                </div>
+            `;
+        }
+
+        // Quiz Mode
+        function toggleQuizMode() {
+            quizMode = !quizMode;
+            const btn = document.querySelector('.quiz-btn');
+
+            if (quizMode) {
+                btn.innerHTML = '<span class="icon">🎯</span><span>Exit Quiz</span>';
+                btn.classList.add('active');
+
+                // Remove tooltips
+                for (const [mineral, layer] of Object.entries(mineralLayers)) {
+                    layer.eachLayer(marker => {
+                        if (marker.getTooltip) {
+                            marker.unbindTooltip();
+                        }
+                    });
+                }
+            } else {
+                btn.innerHTML = '<span class="icon">🎯</span><span>Quiz Mode</span>';
+                btn.classList.remove('active');
+
+                // Restore tooltips - reinitialize
+                reinitializeMinerals();
+            }
+        }
+
+        function reinitializeMinerals() {
+            for (const [mineral, layer] of Object.entries(mineralLayers)) {
+                map.removeLayer(layer);
+            }
+            initializeMinerals();
+            showAllMinerals();
+        }
+
+        // Scoring
+        function addScore(points) {
+            score += points;
+            document.getElementById('scoreValue').textContent = score;
+        }
+
+        function incrementStreak() {
+            streak++;
+            const el = document.getElementById('streakValue');
+            el.textContent = streak;
+            if (streak >= 3) {
+                el.classList.add('streak-fire');
+            }
+        }
+
+        function resetStreak() {
+            streak = 0;
+            const el = document.getElementById('streakValue');
+            el.textContent = streak;
+            el.classList.remove('streak-fire');
+        }
+
+        function discoverLocation(name) {
+            if (!discovered.has(name)) {
+                discovered.add(name);
+                document.getElementById('discoveredValue').textContent = `${discovered.size}/34`;
+            }
+        }
+
+        // Confetti effect
+        function createConfetti() {
+            const colors = ['#e94560', '#f39c12', '#27ae60', '#3498db', '#9b59b6'];
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(confetti);
+
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        // Flashcards
+        function openFlashcards() {
+            document.getElementById('flashcardModal').classList.add('active');
+            currentFlashcard = Math.floor(Math.random() * allLocations.length);
+            showFlashcard();
+        }
+
+        function closeFlashcards() {
+            document.getElementById('flashcardModal').classList.remove('active');
+            document.getElementById('flashcard').classList.remove('flipped');
+        }
+
+        function showFlashcard() {
+            const loc = allLocations[currentFlashcard];
+            const config = mineralConfig[loc.mineral];
+
+            document.getElementById('cardIcon').textContent = config.icon;
+            document.getElementById('cardQuestion').textContent = `Where is ${loc.name} located and what mineral is found there?`;
+            document.getElementById('cardHint').textContent = 'Click to reveal answer';
+
+            document.getElementById('answerMineral').textContent = `${loc.name}, ${loc.state}`;
+            document.getElementById('answerDetails').textContent = loc.facts;
+
+            document.getElementById('flashcard').classList.remove('flipped');
+        }
+
+        function flipCard() {
+            document.getElementById('flashcard').classList.toggle('flipped');
+            if (document.getElementById('flashcard').classList.contains('flipped')) {
+                addScore(5);
+                discoverLocation(allLocations[currentFlashcard].name);
+            }
+        }
+
+        function nextCard() {
+            currentFlashcard = Math.floor(Math.random() * allLocations.length);
+            showFlashcard();
+        }
+
+        // MCQ
+        function openMCQ() {
+            document.getElementById('mcqModal').classList.add('active');
+            currentMCQ = 0;
+            showMCQ();
+        }
+
+        function closeMCQ() {
+            document.getElementById('mcqModal').classList.remove('active');
+        }
+
+        function showMCQ() {
+            const q = mcqQuestions[currentMCQ];
+            document.getElementById('mcqProgress').textContent = `Question ${currentMCQ + 1}/${mcqQuestions.length}`;
+            document.getElementById('mcqQuestion').textContent = q.question;
+
+            const optionsDiv = document.getElementById('mcqOptions');
+            optionsDiv.innerHTML = q.options.map((opt, i) =>
+                `<button class="mcq-option" onclick="selectOption(this, ${i})">(${String.fromCharCode(97 + i)}) ${opt}</button>`
+            ).join('');
+
+            document.getElementById('mcqFeedback').className = 'mcq-feedback';
+            document.getElementById('mcqFeedback').style.display = 'none';
+            document.getElementById('mcqNextBtn').style.display = 'none';
+        }
+
+        function selectOption(btn, index) {
+            const q = mcqQuestions[currentMCQ];
+            const options = document.querySelectorAll('.mcq-option');
+
+            options.forEach(opt => opt.classList.add('disabled'));
+
+            if (index === q.correct) {
+                btn.classList.add('correct');
+                document.getElementById('mcqFeedback').className = 'mcq-feedback show correct';
+                document.getElementById('mcqFeedback').innerHTML = `<strong>✓ Correct!</strong> ${q.explanation}`;
+                addScore(20);
+                incrementStreak();
+                createConfetti();
+            } else {
+                btn.classList.add('wrong');
+                options[q.correct].classList.add('correct');
+                document.getElementById('mcqFeedback').className = 'mcq-feedback show wrong';
+                document.getElementById('mcqFeedback').innerHTML = `<strong>✗ Incorrect.</strong> ${q.explanation}`;
+                resetStreak();
+            }
+
+            document.getElementById('mcqNextBtn').style.display = 'inline-block';
+        }
+
+        function nextMCQ() {
+            currentMCQ = (currentMCQ + 1) % mcqQuestions.length;
+            showMCQ();
+        }
+
+        // Reset explore
+        function resetExplore() {
+            quizMode = false;
+            document.querySelector('.quiz-btn').innerHTML = '<span class="icon">🎯</span><span>Quiz Mode</span>';
+            document.querySelector('.quiz-btn').classList.remove('active');
+            clearBelts();
+            reinitializeMinerals();
+            showAllMinerals();
+            map.setView([22.5, 82], 5);
+        }
+
+        // Creative Mnemonics with Stories
+        const mnemonics = [
+            {
+                id: 'coal',
+                icon: '🚂',
+                mineral: 'Coal',
+                mineralIcon: '🪨',
+                sentence: '<span class="word-highlight">J</span>ungle <span class="word-highlight">R</span>aja <span class="word-highlight">B</span>ought <span class="word-highlight">K</span>oyla',
+                shortForm: 'JRBK',
+                story: '🚂 Imagine a Jungle Raja (King) who Bought Koyla (coal) to run his royal train through the Damodar Valley!',
+                decode: ['Jharia', 'Raniganj', 'Bokaro', 'Karanpura'],
+                locations: ['Jharia', 'Raniganj', 'Bokaro', 'Karanpura'],
+                hint: 'Damodar Valley Coalfields - Think of a king buying coal for his train!'
+            },
+            {
+                id: 'iron',
+                icon: '⚔️',
+                mineral: 'Iron Ore',
+                mineralIcon: '⛏️',
+                sentence: '<span class="word-highlight">B</span>ig <span class="word-highlight">B</span>ull <span class="word-highlight">C</span>arries <span class="word-highlight">K</span>udremukh',
+                shortForm: 'BBCK',
+                story: '🐂 A Big Bull (Bailadila means ox hump!) Carries iron to Kudremukh (horse face mountain)! Both names describe how the hills look!',
+                decode: ['Bailadila', 'Bellary', 'Chitradurga', 'Kudremukh'],
+                locations: ['Bailadila', 'Ballari', 'Chitradurga', 'Kudremukh'],
+                hint: 'Major Iron Ore - Bailadila = Ox hump, Kudremukh = Horse face!'
+            },
+            {
+                id: 'mica',
+                icon: '✨',
+                mineral: 'Mica',
+                mineralIcon: '✨',
+                sentence: '<span class="word-highlight">K</span>ala <span class="word-highlight">G</span>ehna <span class="word-highlight">H</span>ai <span class="word-highlight">A</span>jmer-<span class="word-highlight">N</span>ellore',
+                shortForm: 'KGHAN',
+                story: '💎 "Kala Gehna" (Black Jewel) shines like mica! From Koderma to Nellore, mica sparkles in toothpaste and electronics!',
+                decode: ['Koderma', 'Gaya', 'Hazaribagh', 'Ajmer', 'Nellore'],
+                locations: ['Koderma', 'Gaya', 'Hazaribagh', 'Ajmer', 'Nellore'],
+                hint: 'Mica Belt - Sparkles like a black jewel! Used in toothpaste!'
+            },
+            {
+                id: 'copper',
+                icon: '🔌',
+                mineral: 'Copper',
+                mineralIcon: '🥉',
+                sentence: '<span class="word-highlight">B</span>ijli <span class="word-highlight">K</span>a <span class="word-highlight">S</span>aathi',
+                shortForm: 'BKS',
+                story: '⚡ "Bijli Ka Saathi" (Friend of Electricity)! Copper conducts electricity in wires. India is critically deficient in copper!',
+                decode: ['Balaghat (Malanjkhand)', 'Khetri', 'Singhbhum'],
+                locations: ['Balaghat', 'Khetri', 'Singhbhum'],
+                hint: 'Copper - Used in electrical wires! India needs more copper!'
+            },
+            {
+                id: 'bauxite',
+                icon: '✈️',
+                mineral: 'Bauxite',
+                mineralIcon: '🧱',
+                sentence: '<span class="word-highlight">P</span>lane <span class="word-highlight">A</span>luminium <span class="word-highlight">M</span>ein',
+                shortForm: 'PAM',
+                story: '✈️ "Plane Aluminium Mein" - Aeroplanes are made of aluminium from bauxite! Odisha produces 65% of India\'s bauxite!',
+                decode: ['Panchpatmali', 'Amarkantak', 'Maikal Hills'],
+                locations: ['Panchpatmali', 'Amarkantak', 'Maikal Hills'],
+                hint: 'Bauxite = Aluminium ore - Light metal for planes!'
+            },
+            {
+                id: 'manganese',
+                icon: '🏗️',
+                mineral: 'Manganese',
+                mineralIcon: '🔮',
+                sentence: '<span class="word-highlight">B</span>ana <span class="word-highlight">N</span>aya <span class="word-highlight">S</span>teel <span class="word-highlight">D</span>ost',
+                shortForm: 'BNSD',
+                story: '🏗️ "Bana Naya Steel Dost" - 10 kg manganese makes 1 tonne of steel! Manganese is steel\'s best friend!',
+                decode: ['Balaghat', 'Nagpur', 'Sundergarh', 'Dharwar'],
+                locations: ['Balaghat', 'Nagpur', 'Sundergarh', 'Dharwar'],
+                hint: 'Manganese - 10 kg needed for 1 tonne of steel!'
+            },
+            {
+                id: 'lignite',
+                icon: '🔥',
+                mineral: 'Lignite',
+                mineralIcon: '🔥',
+                sentence: '<span class="word-highlight">N</span>eyveli = <span class="word-highlight">N</span>ew <span class="word-highlight">L</span>ow-grade <span class="word-highlight">C</span>oal',
+                shortForm: 'NNLC',
+                story: '🔥 Neyveli has brown coal (lignite) - 55 million years old! It\'s younger and lower grade than Gondwana coal (200+ million years)!',
+                decode: ['Neyveli (Tamil Nadu)'],
+                locations: ['Neyveli'],
+                hint: 'Lignite - Brown coal, high moisture, tertiary age (55 million years)'
+            }
+        ];
+
+        let currentMnemonicIndex = 0;
+
+        // Populate sidebar mnemonics
+        function populateMnemonics() {
+            const container = document.getElementById('mnemonicList');
+            container.innerHTML = mnemonics.map((m, i) => `
+                <div class="mnemonic-item" onclick="showMnemonicDetail(${i})">
+                    <div class="mnemonic-sentence">${m.sentence}</div>
+                    <div class="mnemonic-decode">
+                        ${m.decode.map(d => `<span>${d}</span>`).join('')}
+                    </div>
+                    <div class="mnemonic-mineral-tag">${m.mineralIcon} ${m.mineral}</div>
+                </div>
+            `).join('');
+        }
+
+        function showMnemonicDetail(index) {
+            currentMnemonicIndex = index;
+            openMnemonicGame();
+        }
+
+        function openMnemonicGame() {
+            document.getElementById('mnemonicModal').classList.add('active');
+            showCurrentMnemonic();
+        }
+
+        function closeMnemonicGame() {
+            document.getElementById('mnemonicModal').classList.remove('active');
+            document.getElementById('challengeInput').value = '';
+            document.getElementById('challengeInput').className = 'challenge-input';
+            document.getElementById('challengeFeedback').className = 'challenge-feedback';
+        }
+
+        function showCurrentMnemonic() {
+            const m = mnemonics[currentMnemonicIndex];
+
+            document.getElementById('storyIcon').textContent = m.icon;
+            document.getElementById('storyText').innerHTML = m.story;
+
+            document.getElementById('challengeQuestion').textContent = `What does ${m.shortForm} stand for? (${m.mineral})`;
+            document.getElementById('challengeHint').textContent = m.hint;
+
+            document.getElementById('challengeInput').value = '';
+            document.getElementById('challengeInput').className = 'challenge-input';
+            document.getElementById('challengeFeedback').className = 'challenge-feedback';
+
+            // Show location chips
+            const locContainer = document.getElementById('mnemonicLocations');
+            locContainer.innerHTML = m.locations.map(loc =>
+                `<span class="location-chip" onclick="revealLocation(this, '${loc}')">${loc}</span>`
+            ).join('');
+
+            // Set up input listener
+            const input = document.getElementById('challengeInput');
+            input.onkeyup = function() {
+                checkMnemonicAnswer(this.value.toUpperCase(), m.shortForm);
+            };
+        }
+
+        function checkMnemonicAnswer(answer, correct) {
+            const input = document.getElementById('challengeInput');
+            const feedback = document.getElementById('challengeFeedback');
+
+            if (answer === correct) {
+                input.className = 'challenge-input correct';
+                feedback.className = 'challenge-feedback show correct';
+                feedback.innerHTML = `🎉 Correct! ${mnemonics[currentMnemonicIndex].decode.join(' → ')}`;
+                addScore(15);
+                createConfetti();
+
+                // Reveal all locations
+                document.querySelectorAll('.location-chip').forEach(chip => {
+                    chip.classList.add('revealed');
+                });
+            } else if (answer.length >= correct.length) {
+                input.className = 'challenge-input wrong';
+                feedback.className = 'challenge-feedback show wrong';
+                feedback.innerHTML = `Try again! Hint: ${correct.split('').join(' - ')}`;
+            }
+        }
+
+        function revealLocation(el, locName) {
+            el.classList.add('revealed');
+
+            // Find and zoom to location on map
+            for (const [mineral, locations] of Object.entries(minerals)) {
+                const loc = locations.find(l => l.name === locName || l.name.includes(locName));
+                if (loc) {
+                    map.setView([loc.lat, loc.lng], 7);
+                    break;
+                }
+            }
+        }
+
+        function nextMnemonic() {
+            currentMnemonicIndex = (currentMnemonicIndex + 1) % mnemonics.length;
+            showCurrentMnemonic();
+        }
+
+        // Initialize
+        initializeMinerals();
+        populateMnemonics();
+    </script>
+</body>
+</html>

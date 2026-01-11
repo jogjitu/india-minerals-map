@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>India Minerals Map - NCERT Class 10 Board Exam Prep</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -20,19 +23,20 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
-            background: #0f0f1a;
+            background: #f0f2f5;
         }
 
         /* Sidebar Styles */
         .sidebar {
             width: 340px;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
+            background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+            color: #333;
             padding: 15px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 12px;
+            border-right: 1px solid #e0e0e0;
         }
 
         .sidebar::-webkit-scrollbar {
@@ -60,7 +64,7 @@
 
         .header .subtitle {
             font-size: 0.75em;
-            color: #aaa;
+            color: #666;
             margin-top: 2px;
         }
 
@@ -170,42 +174,51 @@
 
         /* Section Styles */
         .section {
-            background: rgba(255, 255, 255, 0.05);
+            background: #f8f9fa;
             padding: 12px;
             border-radius: 10px;
+            border: 1px solid #e0e0e0;
         }
 
         .section h2 {
             font-size: 0.9em;
-            color: #e94560;
+            color: #d63031;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        /* Filter Section */
+        /* Filter Grid - Always visible */
         .filter-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 10px;
         }
 
         .filter-item {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 10px;
-            background: rgba(255, 255, 255, 0.08);
+            gap: 8px;
+            padding: 10px 12px;
+            background: #fff;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 0.8em;
+            font-size: 0.85em;
+            border: 2px solid #e0e0e0;
+            color: #333;
         }
 
         .filter-item:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: scale(1.02);
+            background: #f0f0f0;
+            border-color: #ccc;
+        }
+
+        .filter-item.active {
+            background: rgba(233, 69, 96, 0.1);
+            border-color: #e94560;
         }
 
         .filter-item input {
@@ -214,7 +227,7 @@
         }
 
         .mineral-icon {
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
 
         .btn-row {
@@ -226,9 +239,9 @@
         .btn-small {
             flex: 1;
             padding: 6px 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: transparent;
-            color: white;
+            border: 1px solid #ccc;
+            background: #fff;
+            color: #333;
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.75em;
@@ -237,7 +250,8 @@
         }
 
         .btn-small:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: #e9e9e9;
+            border-color: #aaa;
         }
 
         /* Belt Buttons */
@@ -253,8 +267,8 @@
             gap: 10px;
             padding: 10px 12px;
             border: 2px solid;
-            background: transparent;
-            color: white;
+            background: #fff;
+            color: #333;
             border-radius: 8px;
             cursor: pointer;
             font-size: 0.8em;
@@ -285,7 +299,7 @@
         .belt-btn.nw-belt { border-color: #f39c12; }
 
         .belt-btn:hover, .belt-btn.active {
-            color: #1a1a2e;
+            color: #fff;
         }
 
         .belt-btn.ne-belt:hover, .belt-btn.ne-belt.active { background: #3498db; }
@@ -294,7 +308,8 @@
 
         /* Info Panel */
         .info-panel {
-            min-height: 100px;
+            min-height: 80px;
+            overflow: hidden;
         }
 
         .info-content {
@@ -303,6 +318,12 @@
 
         .info-content.active {
             display: block;
+        }
+
+        .info-placeholder {
+            text-align: center;
+            padding: 15px 10px;
+            color: #888;
         }
 
         .info-header {
@@ -329,12 +350,12 @@
         .info-name {
             font-size: 1.1em;
             font-weight: 600;
-            color: #fff;
+            color: #333;
         }
 
         .info-state {
             font-size: 0.8em;
-            color: #aaa;
+            color: #666;
         }
 
         .info-badge {
@@ -349,9 +370,9 @@
         .info-facts {
             font-size: 0.85em;
             line-height: 1.6;
-            color: #ccc;
+            color: #555;
             padding: 10px;
-            background: rgba(0,0,0,0.2);
+            background: #f0f0f0;
             border-radius: 8px;
             border-left: 3px solid #e94560;
         }
@@ -359,13 +380,13 @@
         .info-belt {
             margin-top: 8px;
             padding: 8px;
-            background: rgba(255,255,255,0.05);
+            background: #eee;
             border-radius: 6px;
             font-size: 0.8em;
         }
 
         .info-placeholder {
-            color: #666;
+            color: #888;
             text-align: center;
             padding: 30px 10px;
             font-size: 0.9em;
@@ -377,41 +398,42 @@
             opacity: 0.5;
         }
 
+        /* Collapsible Sections */
+        .section.collapsible .section-header {
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .section.collapsible .collapse-icon {
+            font-size: 0.7em;
+            transition: transform 0.3s;
+        }
+
+        .section.collapsible .section-content {
+            display: block;
+        }
+
+        .section.collapsible.collapsed .section-content {
+            display: none;
+        }
+
+        .section.collapsible.collapsed .section-header {
+            margin-bottom: 0;
+        }
+
+        .section.collapsible.collapsed .collapse-icon {
+            transform: rotate(0deg);
+        }
+
         /* Mnemonics */
         .mnemonic-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-        }
-
-        .mnemonic-item {
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            border-left: 3px solid #f39c12;
-        }
-
-        .mnemonic-key {
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #f39c12;
-            letter-spacing: 3px;
-            font-family: monospace;
-        }
-
-        .mnemonic-expand {
-            font-size: 0.8em;
-            color: #ccc;
-            margin-top: 4px;
-        }
-
-        .mnemonic-mineral {
-            font-size: 0.7em;
-            color: #888;
-            margin-top: 2px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            gap: 0;
         }
 
         /* Map Container */
@@ -423,7 +445,7 @@
         #map {
             width: 100%;
             height: 100%;
-            background: #1a1a2e;
+            background: #e8e8e8;
         }
 
         /* Custom Markers */
@@ -454,24 +476,122 @@
             100% { transform: scale(1); }
         }
 
+        /* Quiz Answer Panel */
+        .quiz-answer-panel {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.15) 0%, rgba(46, 204, 113, 0.15) 100%);
+            border: 2px solid #27ae60;
+        }
+
+        .quiz-answer-panel h2 {
+            color: #27ae60;
+        }
+
+        .quiz-instructions {
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+
+        .quiz-step {
+            font-size: 0.85em;
+            color: #555;
+            padding: 6px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .quiz-step:last-child {
+            border-bottom: none;
+        }
+
+        .quiz-result {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #27ae60;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-details {
+            font-size: 0.85em;
+            color: #555;
+            line-height: 1.5;
+            padding: 8px;
+            background: #fff;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn-next-quiz {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
+            border: none !important;
+            color: white !important;
+            width: 100%;
+            padding: 10px !important;
+            font-weight: 600;
+        }
+
+        /* Quiz Mode Banner */
+        .quiz-mode-banner {
+            display: none;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.85em;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+            animation: pulse-banner 2s ease-in-out infinite;
+        }
+
+        .quiz-mode-banner.active {
+            display: block;
+        }
+
+        @keyframes pulse-banner {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.02); }
+        }
+
         /* Legend */
         .legend {
             position: absolute;
             bottom: 20px;
             right: 20px;
-            background: rgba(26, 26, 46, 0.95);
+            background: rgba(255, 255, 255, 0.95);
             padding: 15px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             z-index: 1000;
-            color: white;
+            color: #333;
             font-size: 0.8em;
             backdrop-filter: blur(10px);
+            border: 1px solid #e0e0e0;
         }
 
         .legend h4 {
             margin-bottom: 10px;
-            color: #e94560;
+            color: #d63031;
             font-size: 0.9em;
         }
 
@@ -483,9 +603,12 @@
         }
 
         .legend-icon {
-            font-size: 1.2em;
-            width: 24px;
+            font-size: 1em;
+            width: 20px;
             text-align: center;
+        }
+        .legend-text {
+            font-size: 0.9em;
         }
 
         /* Flashcard Modal */
@@ -607,12 +730,14 @@
 
         /* MCQ Modal */
         .mcq-container {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
             padding: 30px;
             border-radius: 20px;
             max-width: 500px;
             width: 90%;
-            color: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
         }
 
         .mcq-header {
@@ -624,7 +749,7 @@
 
         .mcq-progress {
             font-size: 0.85em;
-            color: #aaa;
+            color: #666;
         }
 
         .mcq-question {
@@ -641,19 +766,19 @@
 
         .mcq-option {
             padding: 15px 20px;
-            background: rgba(255,255,255,0.1);
-            border: 2px solid transparent;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s;
             font-family: inherit;
             font-size: 1em;
-            color: white;
+            color: #333;
             text-align: left;
         }
 
         .mcq-option:hover {
-            background: rgba(255,255,255,0.2);
+            background: #eee;
             border-color: #e94560;
         }
 
@@ -739,30 +864,31 @@
 
         /* Tooltip */
         .leaflet-tooltip {
-            background: rgba(26, 26, 46, 0.95);
-            border: none;
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
-            color: white;
+            color: #333;
             font-family: 'Poppins', sans-serif;
             padding: 8px 12px;
             font-size: 0.85em;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
         .leaflet-tooltip::before {
-            border-top-color: rgba(26, 26, 46, 0.95);
+            border-top-color: rgba(255, 255, 255, 0.98);
         }
 
         /* Popup */
         .leaflet-popup-content-wrapper {
-            background: rgba(26, 26, 46, 0.98);
-            color: white;
+            background: rgba(255, 255, 255, 0.98);
+            color: #333;
             border-radius: 12px;
             font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
         .leaflet-popup-tip {
-            background: rgba(26, 26, 46, 0.98);
+            background: rgba(255, 255, 255, 0.98);
         }
 
         .popup-content {
@@ -787,7 +913,7 @@
 
         .popup-subtitle {
             font-size: 0.8em;
-            color: #aaa;
+            color: #666;
         }
 
         .popup-badge {
@@ -800,57 +926,70 @@
 
         .popup-facts {
             font-size: 0.85em;
-            color: #ccc;
+            color: #555;
             margin-top: 8px;
             padding-top: 8px;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid #e0e0e0;
         }
 
         /* Mnemonic Styles */
         .mnemonic-item {
             padding: 12px;
-            background: rgba(0,0,0,0.2);
+            background: #fff;
             border-radius: 10px;
             border-left: 4px solid #f39c12;
             cursor: pointer;
             transition: all 0.3s;
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            border-left: 4px solid #f39c12;
+        }
+
+        .mnemonic-item:last-child {
+            margin-bottom: 0;
         }
 
         .mnemonic-item:hover {
-            background: rgba(243, 156, 18, 0.2);
+            background: rgba(243, 156, 18, 0.1);
             transform: translateX(5px);
         }
 
         .mnemonic-sentence {
-            font-size: 1em;
+            font-size: 0.95em;
             font-weight: 600;
-            color: #f39c12;
-            margin-bottom: 6px;
-            line-height: 1.4;
+            color: #e67e22;
+            margin-bottom: 8px;
+            line-height: 1.5;
+            word-wrap: break-word;
         }
 
-        .mnemonic-sentence .highlight {
-            color: #fff;
+        .mnemonic-sentence .word-highlight {
+            color: #d63031;
             background: linear-gradient(90deg, #e94560, #f39c12);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            font-size: 1.1em;
+            font-size: 1.15em;
+            font-weight: 700;
         }
 
         .mnemonic-decode {
-            font-size: 0.75em;
-            color: #aaa;
+            font-size: 0.72em;
+            color: #666;
             display: flex;
             flex-wrap: wrap;
             gap: 4px;
-            margin-top: 4px;
+            margin-top: 6px;
+            margin-bottom: 6px;
         }
 
         .mnemonic-decode span {
-            background: rgba(255,255,255,0.1);
-            padding: 2px 6px;
+            background: #f0f0f0;
+            padding: 3px 8px;
             border-radius: 4px;
+            white-space: nowrap;
         }
 
         .mnemonic-mineral-tag {
@@ -858,21 +997,23 @@
             align-items: center;
             gap: 4px;
             font-size: 0.7em;
-            color: #888;
-            margin-top: 6px;
-            padding: 3px 8px;
-            background: rgba(255,255,255,0.05);
+            color: #666;
+            margin-top: 4px;
+            padding: 4px 10px;
+            background: #f0f0f0;
             border-radius: 12px;
         }
 
         /* Mnemonic Game Modal */
         .mnemonic-game-container {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
             padding: 25px;
             border-radius: 20px;
             max-width: 550px;
             width: 95%;
-            color: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
         }
 
         .mnemonic-game-header {
@@ -917,32 +1058,33 @@
         }
 
         .mnemonic-challenge {
-            background: rgba(0,0,0,0.3);
+            background: #f5f5f5;
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
         }
 
         .challenge-question {
             font-size: 1.1em;
             font-weight: 600;
             margin-bottom: 10px;
-            color: #e94560;
+            color: #d63031;
         }
 
         .challenge-hint {
             font-size: 0.85em;
-            color: #888;
+            color: #666;
             margin-bottom: 15px;
         }
 
         .challenge-input {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid #ddd;
             border-radius: 10px;
-            background: rgba(255,255,255,0.1);
-            color: white;
+            background: #fff;
+            color: #333;
             font-size: 1.1em;
             font-family: inherit;
             text-transform: uppercase;
@@ -1002,16 +1144,18 @@
 
         .location-chip {
             padding: 8px 14px;
-            background: rgba(255,255,255,0.1);
+            background: #f0f0f0;
             border-radius: 20px;
             font-size: 0.85em;
             cursor: pointer;
             transition: all 0.2s;
-            border: 2px solid transparent;
+            border: 2px solid #ddd;
+            color: #333;
         }
 
         .location-chip:hover {
-            background: rgba(255,255,255,0.2);
+            background: #e0e0e0;
+            border-color: #ccc;
         }
 
         .location-chip.revealed {
@@ -1029,18 +1173,166 @@
         @media (max-width: 768px) {
             body {
                 flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+                overflow-y: auto;
             }
             .sidebar {
                 width: 100%;
-                height: 45vh;
-                padding: 10px;
+                height: auto;
+                max-height: none;
+                padding: 12px;
+                overflow-y: visible;
+                flex-shrink: 0;
             }
             .map-container {
-                height: 55vh;
+                height: 50vh;
+                min-height: 300px;
+                flex-shrink: 0;
+            }
+            .header h1 {
+                font-size: 1.1em;
+            }
+            .score-panel {
+                padding: 10px;
+            }
+            .score-value {
+                font-size: 1.2em;
+            }
+            .mode-buttons {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .mode-btn {
+                padding: 10px 6px;
+                font-size: 0.75em;
+            }
+            .mode-btn .icon {
+                font-size: 1.3em;
+            }
+            .section {
+                padding: 10px;
+            }
+            .section h2 {
+                font-size: 0.85em;
+            }
+            .filter-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 5px;
+            }
+            .filter-item {
+                padding: 6px 8px;
+                font-size: 0.72em;
+                border-width: 1px;
+            }
+            .filter-item .mineral-icon {
+                font-size: 1em;
+            }
+            .belt-list {
+                gap: 4px;
+            }
+            .belt-btn {
+                padding: 8px 10px;
+                font-size: 0.75em;
+            }
+            .belt-btn .belt-icon {
+                font-size: 1.2em;
+            }
+            .mnemonic-item {
+                padding: 10px;
+            }
+            .mnemonic-sentence {
+                font-size: 0.9em;
+            }
+            .mnemonic-decode {
+                font-size: 0.7em;
+            }
+            .legend {
+                bottom: 8px;
+                right: 8px;
+                padding: 6px 8px;
+                font-size: 0.6em;
+                max-width: 130px;
+                border-radius: 8px;
+            }
+            .legend h4 {
+                font-size: 0.7em;
+                margin-bottom: 4px;
+            }
+            .legend-item {
+                margin-bottom: 2px;
+                gap: 4px;
+            }
+            .legend-icon {
+                font-size: 0.8em;
+                width: 14px;
+            }
+            .legend-text {
+                font-size: 0.85em;
+                line-height: 1.1;
             }
             .flashcard {
                 width: 90%;
+                max-width: 350px;
                 height: 250px;
+            }
+            .mcq-container {
+                padding: 20px;
+                max-width: 95%;
+            }
+            .mcq-question {
+                font-size: 1em;
+            }
+            .mcq-option {
+                padding: 12px 15px;
+                font-size: 0.9em;
+            }
+            .mnemonic-game-container {
+                padding: 15px;
+                max-width: 95%;
+            }
+            .mnemonic-story {
+                padding: 15px;
+            }
+            .story-icon {
+                font-size: 2em;
+            }
+            .story-text {
+                font-size: 0.95em;
+            }
+            .info-panel {
+                min-height: auto;
+            }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 480px) {
+            .sidebar {
+                padding: 10px;
+                gap: 10px;
+            }
+            .header h1 {
+                font-size: 1em;
+            }
+            .header .subtitle {
+                font-size: 0.65em;
+            }
+            .mode-btn {
+                padding: 8px 4px;
+                font-size: 0.7em;
+            }
+            .mode-btn .icon {
+                font-size: 1.1em;
+            }
+            .filter-item {
+                padding: 5px 6px;
+                font-size: 0.7em;
+            }
+            .mineral-icon {
+                font-size: 1em;
+            }
+            .section h2 {
+                font-size: 0.8em;
             }
         }
     </style>
@@ -1052,81 +1344,49 @@
             <div class="subtitle">NCERT Class 10 Geography - Chapter 5</div>
         </div>
 
-        <div class="score-panel">
-            <div class="score-item">
-                <span class="score-value" id="scoreValue">0</span>
-                <span class="score-label">Score</span>
-            </div>
-            <div class="score-item">
-                <span class="score-value streak-fire" id="streakValue">0</span>
-                <span class="score-label">Streak</span>
-            </div>
-            <div class="score-item">
-                <span class="score-value" id="discoveredValue">0/34</span>
-                <span class="score-label">Discovered</span>
-            </div>
-        </div>
-
-        <div class="mode-buttons">
-            <button class="mode-btn quiz-btn" onclick="toggleQuizMode()">
-                <span class="icon">🎯</span>
-                <span>Quiz Mode</span>
-            </button>
-            <button class="mode-btn flashcard-btn" onclick="openFlashcards()">
-                <span class="icon">🃏</span>
-                <span>Flashcards</span>
-            </button>
-            <button class="mode-btn mcq-btn" onclick="openMCQ()">
-                <span class="icon">📝</span>
-                <span>Practice MCQ</span>
-            </button>
-            <button class="mode-btn explore-btn" onclick="resetExplore()">
-                <span class="icon">🗺️</span>
-                <span>Explore</span>
-            </button>
-        </div>
-
-        <div class="section">
-            <h2>🔍 Filter Minerals</h2>
-            <div class="filter-grid">
-                <label class="filter-item">
+        <!-- Filter Minerals -->
+        <div class="section collapsible">
+            <h2 class="section-header" onclick="toggleSection(this)">🔍 Filter Minerals <span class="collapse-icon">▼</span></h2>
+            <div class="section-content">
+            <div class="filter-grid" id="filterGrid">
+                <label class="filter-item active">
                     <input type="checkbox" checked onchange="toggleMineral('iron')">
                     <span class="mineral-icon">⛏️</span>
                     Iron Ore
                 </label>
-                <label class="filter-item">
+                <label class="filter-item active">
                     <input type="checkbox" checked onchange="toggleMineral('coal')">
-                    <span class="mineral-icon">�ite</span>
+                    <span class="mineral-icon">🪨</span>
                     Coal
                 </label>
                 <label class="filter-item">
-                    <input type="checkbox" checked onchange="toggleMineral('manganese')">
+                    <input type="checkbox" onchange="toggleMineral('manganese')">
                     <span class="mineral-icon">🔮</span>
                     Manganese
                 </label>
                 <label class="filter-item">
-                    <input type="checkbox" checked onchange="toggleMineral('bauxite')">
+                    <input type="checkbox" onchange="toggleMineral('bauxite')">
                     <span class="mineral-icon">🧱</span>
                     Bauxite
                 </label>
                 <label class="filter-item">
-                    <input type="checkbox" checked onchange="toggleMineral('mica')">
+                    <input type="checkbox" onchange="toggleMineral('mica')">
                     <span class="mineral-icon">✨</span>
                     Mica
                 </label>
                 <label class="filter-item">
-                    <input type="checkbox" checked onchange="toggleMineral('copper')">
+                    <input type="checkbox" onchange="toggleMineral('copper')">
                     <span class="mineral-icon">🥉</span>
                     Copper
                 </label>
                 <label class="filter-item">
-                    <input type="checkbox" checked onchange="toggleMineral('limestone')">
-                    <span class="mineral-icon">🪨</span>
+                    <input type="checkbox" onchange="toggleMineral('limestone')">
+                    <span class="mineral-icon">🏛️</span>
                     Limestone
                 </label>
                 <label class="filter-item">
-                    <input type="checkbox" checked onchange="toggleMineral('lignite')">
-                    <span class="mineral-icon">�ite</span>
+                    <input type="checkbox" onchange="toggleMineral('lignite')">
+                    <span class="mineral-icon">🔥</span>
                     Lignite
                 </label>
             </div>
@@ -1134,10 +1394,36 @@
                 <button class="btn-small" onclick="showAllMinerals()">Show All</button>
                 <button class="btn-small" onclick="hideAllMinerals()">Hide All</button>
             </div>
+            </div>
         </div>
 
-        <div class="section">
-            <h2>🗻 Iron Ore Belts (NCERT)</h2>
+        <!-- Mnemonics Section -->
+        <div class="section collapsible collapsed">
+            <h2 class="section-header" onclick="toggleSection(this)">🧠 Memory Tricks (Mnemonics) <span class="collapse-icon">▶</span></h2>
+            <div class="section-content">
+                <div class="mnemonic-list" id="mnemonicList"></div>
+                <button class="btn-small" style="margin-top: 10px; width: 100%;" onclick="openMnemonicGame()">🎮 Practice Mnemonics</button>
+            </div>
+        </div>
+
+        <!-- Quiz Answer Panel - Shows in quiz mode -->
+        <div class="section quiz-answer-panel" id="quizAnswerPanel" style="display: none;">
+            <h2>🎯 Quiz Mode Active</h2>
+            <div class="quiz-instructions" id="quizInstructions">
+                <div class="quiz-step">1. Look at markers on the map (colors show mineral type)</div>
+                <div class="quiz-step">2. Try to guess the location name</div>
+                <div class="quiz-step">3. Click marker to reveal answer & earn points!</div>
+            </div>
+            <div class="quiz-result" id="quizResult" style="display: none;">
+                <div class="result-header" id="resultHeader"></div>
+                <div class="result-details" id="resultDetails"></div>
+                <button class="btn-small btn-next-quiz" onclick="nextQuizQuestion()">Next Location →</button>
+            </div>
+        </div>
+
+        <div class="section collapsible collapsed">
+            <h2 class="section-header" onclick="toggleSection(this)">🗻 Iron Ore Belts (NCERT) <span class="collapse-icon">▶</span></h2>
+            <div class="section-content">
             <div class="belt-list">
                 <button class="belt-btn ne-belt" onclick="showIronBelt('odisha-jharkhand')">
                     <span class="belt-icon">🏔️</span>
@@ -1169,39 +1455,45 @@
                 </button>
             </div>
             <button class="btn-small" style="margin-top: 8px; width: 100%;" onclick="clearBelts()">Clear Highlights</button>
+            </div>
         </div>
 
-        <div class="section info-panel" id="infoPanel">
-            <h2>📍 Location Details</h2>
-            <div class="info-placeholder" id="infoPlaceholder">
-                <div class="hint-icon">👆</div>
-                <div>Click on any mineral pin to see details</div>
-                <div style="font-size: 0.8em; color: #555; margin-top: 5px;">In Quiz Mode, test your memory!</div>
-            </div>
-            <div class="info-content" id="infoContent"></div>
-        </div>
-
-        <div class="section">
-            <h2>🧠 Memory Tricks (Mnemonics)</h2>
-            <div class="mnemonic-list" id="mnemonicList">
-                <!-- Mnemonics will be populated by JS -->
-            </div>
-            <button class="btn-small" style="margin-top: 10px; width: 100%;" onclick="openMnemonicGame()">🎮 Practice Mnemonics</button>
+        <!-- Mode buttons at bottom -->
+        <div class="mode-buttons">
+            <button class="mode-btn quiz-btn" onclick="toggleQuizMode()">
+                <span class="icon">🎯</span>
+                <span>Quiz Mode</span>
+            </button>
+            <button class="mode-btn flashcard-btn" onclick="openFlashcards()">
+                <span class="icon">🃏</span>
+                <span>Flashcards</span>
+            </button>
+            <button class="mode-btn mcq-btn" onclick="openMCQ()">
+                <span class="icon">📝</span>
+                <span>Practice MCQ</span>
+            </button>
+            <button class="mode-btn explore-btn" onclick="resetExplore()">
+                <span class="icon">🗺️</span>
+                <span>Explore</span>
+            </button>
         </div>
     </div>
 
     <div class="map-container">
         <div id="map"></div>
+        <div class="quiz-mode-banner" id="quizBanner">
+            🎯 QUIZ MODE - Click markers to test your knowledge!
+        </div>
         <div class="legend">
             <h4>🗺️ Mineral Legend</h4>
-            <div class="legend-item"><span class="legend-icon">⛏️</span> Iron Ore (Hematite/Magnetite)</div>
-            <div class="legend-item"><span class="legend-icon">🪨</span> Coal (Gondwana/Tertiary)</div>
-            <div class="legend-item"><span class="legend-icon">🔮</span> Manganese</div>
-            <div class="legend-item"><span class="legend-icon">🧱</span> Bauxite (Aluminium ore)</div>
-            <div class="legend-item"><span class="legend-icon">✨</span> Mica</div>
-            <div class="legend-item"><span class="legend-icon">🥉</span> Copper</div>
-            <div class="legend-item"><span class="legend-icon">🏛️</span> Limestone</div>
-            <div class="legend-item"><span class="legend-icon">🔥</span> Lignite</div>
+            <div class="legend-item"><span class="legend-icon">⛏️</span><span class="legend-text">Iron Ore</span></div>
+            <div class="legend-item"><span class="legend-icon">🪨</span><span class="legend-text">Coal</span></div>
+            <div class="legend-item"><span class="legend-icon">🔮</span><span class="legend-text">Manganese</span></div>
+            <div class="legend-item"><span class="legend-icon">🧱</span><span class="legend-text">Bauxite</span></div>
+            <div class="legend-item"><span class="legend-icon">✨</span><span class="legend-text">Mica</span></div>
+            <div class="legend-item"><span class="legend-icon">🥉</span><span class="legend-text">Copper</span></div>
+            <div class="legend-item"><span class="legend-icon">🏛️</span><span class="legend-text">Limestone</span></div>
+            <div class="legend-item"><span class="legend-icon">🔥</span><span class="legend-text">Lignite</span></div>
         </div>
     </div>
 
@@ -1439,7 +1731,7 @@
             scrollWheelZoom: true
         }).setView([22.5, 82], 5);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '©OpenStreetMap, ©CartoDB',
             subdomains: 'abcd',
             maxZoom: 19
@@ -1481,13 +1773,15 @@
             marker.bindPopup(popupContent, { maxWidth: 300 });
 
             marker.on('click', function() {
-                updateInfoPanel(data, mineral);
                 discoverLocation(data.name);
 
                 if (quizMode) {
+                    showQuizResult(data, mineral);
                     addScore(10);
                     incrementStreak();
                     createConfetti();
+                } else {
+                    updateInfoPanel(data, mineral);
                 }
             });
 
@@ -1503,6 +1797,8 @@
         }
 
         // Initialize minerals
+        const defaultMinerals = ['iron', 'coal']; // Only show these by default
+
         function initializeMinerals() {
             allLocations = [];
 
@@ -1515,23 +1811,31 @@
                     allLocations.push({ ...loc, mineral });
                 });
 
-                mineralLayers[mineral].addTo(map);
+                // Only add default minerals to map
+                if (defaultMinerals.includes(mineral)) {
+                    mineralLayers[mineral].addTo(map);
+                }
             }
         }
 
         // Toggle mineral visibility
         function toggleMineral(mineral) {
             const checkbox = document.querySelector(`input[onchange="toggleMineral('${mineral}')"]`);
+            const filterItem = checkbox.closest('.filter-item');
+
             if (checkbox && checkbox.checked) {
                 mineralLayers[mineral].addTo(map);
+                filterItem.classList.add('active');
             } else {
                 map.removeLayer(mineralLayers[mineral]);
+                filterItem.classList.remove('active');
             }
         }
 
         function showAllMinerals() {
             document.querySelectorAll('.filter-grid input').forEach(cb => {
                 cb.checked = true;
+                cb.closest('.filter-item').classList.add('active');
             });
             for (const layer of Object.values(mineralLayers)) {
                 layer.addTo(map);
@@ -1541,13 +1845,16 @@
         function hideAllMinerals() {
             document.querySelectorAll('.filter-grid input').forEach(cb => {
                 cb.checked = false;
+                cb.closest('.filter-item').classList.remove('active');
             });
             for (const layer of Object.values(mineralLayers)) {
                 map.removeLayer(layer);
             }
         }
 
-        // Iron ore belt highlighting
+        // Iron ore belt highlighting with connecting lines
+        let beltLayer = null;
+
         function showIronBelt(belt) {
             clearBelts();
 
@@ -1558,65 +1865,80 @@
                 'maharashtra-goa': ['Goa', 'Ratnagiri']
             };
 
+            const beltColors = {
+                'odisha-jharkhand': '#3498db',
+                'durg-bastar': '#27ae60',
+                'bellary': '#f39c12',
+                'maharashtra-goa': '#e74c3c'
+            };
+
             const locations = minerals.iron.filter(loc => beltLocations[belt].includes(loc.name));
 
             if (locations.length > 0) {
                 const bounds = L.latLngBounds(locations.map(loc => [loc.lat, loc.lng]));
-                map.fitBounds(bounds.pad(0.3));
+                // Less aggressive zoom - pad with 0.8 instead of 0.3
+                map.fitBounds(bounds.pad(0.8), { maxZoom: 7 });
 
-                // Highlight these markers
+                beltLayer = L.layerGroup();
+                const color = beltColors[belt];
+
+                // Create polyline connecting all locations in the belt
+                const latLngs = locations.map(loc => [loc.lat, loc.lng]);
+
+                // Draw connecting lines
+                const polyline = L.polyline(latLngs, {
+                    color: color,
+                    weight: 4,
+                    opacity: 0.8,
+                    dashArray: '10, 10'
+                }).addTo(beltLayer);
+
+                // Add small circle markers at each location
                 locations.forEach(loc => {
-                    L.circle([loc.lat, loc.lng], {
-                        radius: 50000,
-                        color: '#e94560',
-                        fillColor: '#e94560',
-                        fillOpacity: 0.2
-                    }).addTo(map);
+                    L.circleMarker([loc.lat, loc.lng], {
+                        radius: 12,
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 0.4,
+                        weight: 3
+                    }).addTo(beltLayer);
                 });
+
+                beltLayer.addTo(map);
             }
         }
 
         function clearBelts() {
-            map.eachLayer(layer => {
-                if (layer instanceof L.Circle) {
-                    map.removeLayer(layer);
-                }
-            });
+            if (beltLayer) {
+                map.removeLayer(beltLayer);
+                beltLayer = null;
+            }
             map.setView([22.5, 82], 5);
         }
 
-        // Update info panel
+        // Update info panel - removed, info shown via popup on map
         function updateInfoPanel(data, mineral) {
-            const config = mineralConfig[mineral];
-            document.getElementById('infoPlaceholder').style.display = 'none';
-
-            const content = document.getElementById('infoContent');
-            content.classList.add('active');
-
-            content.innerHTML = `
-                <div class="info-header">
-                    <div class="info-icon" style="background: ${config.color}">${config.icon}</div>
-                    <div class="info-title">
-                        <div class="info-name">${data.name}</div>
-                        <div class="info-state">${data.state}</div>
-                    </div>
-                </div>
-                <div class="info-badge" style="background: ${config.color}">${config.name}${data.oreType ? ' - ' + data.oreType : ''}${data.coalType ? ' (' + data.coalType + ')' : ''}</div>
-                <div class="info-facts">${data.facts}</div>
-                <div class="info-belt">
-                    <strong>Belt:</strong> ${data.belt || 'N/A'}
-                </div>
-            `;
+            // Panel removed - info shown in map popup
         }
 
         // Quiz Mode
         function toggleQuizMode() {
             quizMode = !quizMode;
             const btn = document.querySelector('.quiz-btn');
+            const banner = document.getElementById('quizBanner');
+            const quizPanel = document.getElementById('quizAnswerPanel');
 
             if (quizMode) {
                 btn.innerHTML = '<span class="icon">🎯</span><span>Exit Quiz</span>';
                 btn.classList.add('active');
+                banner.classList.add('active');
+
+                // Show quiz panel
+                quizPanel.style.display = 'block';
+
+                // Reset quiz result
+                document.getElementById('quizInstructions').style.display = 'block';
+                document.getElementById('quizResult').style.display = 'none';
 
                 // Remove tooltips
                 for (const [mineral, layer] of Object.entries(mineralLayers)) {
@@ -1629,10 +1951,43 @@
             } else {
                 btn.innerHTML = '<span class="icon">🎯</span><span>Quiz Mode</span>';
                 btn.classList.remove('active');
+                banner.classList.remove('active');
+
+                // Hide quiz panel
+                quizPanel.style.display = 'none';
 
                 // Restore tooltips - reinitialize
                 reinitializeMinerals();
             }
+        }
+
+        // Show quiz result when marker is clicked
+        function showQuizResult(data, mineral) {
+            const config = mineralConfig[mineral];
+
+            document.getElementById('quizInstructions').style.display = 'none';
+            document.getElementById('quizResult').style.display = 'block';
+
+            document.getElementById('resultHeader').innerHTML = `
+                <span style="font-size: 1.3em;">${config.icon}</span>
+                ${data.name}, ${data.state}
+            `;
+
+            document.getElementById('resultDetails').innerHTML = `
+                <strong style="color: ${config.color};">${config.name}</strong>
+                ${data.oreType ? ' - ' + data.oreType : ''}
+                ${data.coalType ? ' (' + data.coalType + ')' : ''}<br><br>
+                ${data.facts}
+            `;
+        }
+
+        // Next quiz question - reset panel
+        function nextQuizQuestion() {
+            document.getElementById('quizInstructions').style.display = 'block';
+            document.getElementById('quizResult').style.display = 'none';
+
+            // Close any open popup
+            map.closePopup();
         }
 
         function reinitializeMinerals() {
@@ -1640,7 +1995,22 @@
                 map.removeLayer(layer);
             }
             initializeMinerals();
-            showAllMinerals();
+            // Restore based on checkbox states
+            syncMineralsWithCheckboxes();
+        }
+
+        function syncMineralsWithCheckboxes() {
+            document.querySelectorAll('.filter-grid input').forEach(cb => {
+                const mineral = cb.getAttribute('onchange').match(/'(\w+)'/)[1];
+                const filterItem = cb.closest('.filter-item');
+                if (cb.checked) {
+                    mineralLayers[mineral].addTo(map);
+                    filterItem.classList.add('active');
+                } else {
+                    map.removeLayer(mineralLayers[mineral]);
+                    filterItem.classList.remove('active');
+                }
+            });
         }
 
         // Scoring
@@ -1979,9 +2349,26 @@
             showCurrentMnemonic();
         }
 
+        // Toggle collapsible sections
+        function toggleSection(header) {
+            const section = header.closest('.section');
+            const icon = header.querySelector('.collapse-icon');
+            section.classList.toggle('collapsed');
+            icon.textContent = section.classList.contains('collapsed') ? '▶' : '▼';
+        }
+
         // Initialize
         initializeMinerals();
         populateMnemonics();
+
+        // Auto-collapse on mobile (except filter-section which stays visible)
+        if (window.innerWidth <= 768) {
+            document.querySelectorAll('.section.collapsible').forEach(section => {
+                section.classList.add('collapsed');
+                const icon = section.querySelector('.collapse-icon');
+                if (icon) icon.textContent = '▶';
+            });
+        }
     </script>
 </body>
 </html>
